@@ -24,14 +24,22 @@ jobs:
           targets: wasm32-unknown-unknown
       - name: install wasm-bindgen-cli
         run: cargo install wasm-bindgen-cli
+      - name: install binaryen (wasm-opt)
+        run: |
+          curl -Lo binaryen.tar.gz https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
+          tar -xzf binaryen.tar.gz --wildcards '**/wasm-opt' --strip-components=2 -C .
 
       - name: Build
-        run: cargo build --release --target wasm32-unknown-unknown
+        run: cargo build --profile wasm-release --target wasm32-unknown-unknown
 
       - name: Prepare package
         run: |
-          wasm-bindgen --no-typescript --out-name bevy_game --out-dir wasm --target web target/wasm32-unknown-unknown/release/${{ env.binary }}.wasm
-          cp -r assets wasm/
+          wasm-bindgen --target web --no-typescript --out-name dat --out-dir wasm target/wasm32-unknown-unknown/wasm-release/destruction_and_tranquility.wasm
+        # skip - we embed assets into the wasm file
+        # cp -r assets wasm/
+
+      - name: Optimize wasm
+        run: ./wasm-opt --metrics -Oz -o wasm/dat_bg.wasm wasm/dat_bg.wasm
 
       - name: Package as a zip
         working-directory: ./wasm
