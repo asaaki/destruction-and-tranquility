@@ -22,9 +22,13 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - name: install wasm-bindgen-cli
+      - name: Cache
+        uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-all-crates: true
+      - name: Install wasm-bindgen-cli
         run: cargo install wasm-bindgen-cli
-      - name: install binaryen (wasm-opt)
+      - name: Install binaryen (wasm-opt)
         run: |
           curl -Lo binaryen.tar.gz https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
           tar -xzf binaryen.tar.gz --wildcards '**/wasm-opt' --strip-components=2 -C .
@@ -73,7 +77,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-unknown-linux-gnu
-      - name: install dependencies
+      - name: Cache
+        uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-all-crates: true
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
@@ -119,6 +127,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
+      - name: Cache
+        uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-all-crates: true
 
       - name: Build
         run: cargo build --release --target x86_64-pc-windows-msvc
@@ -160,6 +172,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-apple-darwin
+      - name: Cache
+        uses: Swatinem/rust-cache@v2.7.0
+        with:
+          cache-all-crates: true
       - name: Environment Setup
         run: |
           export CFLAGS="-fno-stack-check"
