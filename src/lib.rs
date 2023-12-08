@@ -192,7 +192,7 @@ fn setup_debug_build_info(mut commands: Commands<'_, '_>, asset_server: Res<'_, 
             TextStyle {
                 font: font.clone(),
                 font_size: 12.0,
-                color: Color::GOLD
+                color: Color::GOLD,
             },
         )])
         .with_alignment(TextAlignment::Right),
