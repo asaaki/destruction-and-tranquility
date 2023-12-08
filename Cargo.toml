@@ -61,10 +61,10 @@ bevy = { version = "0.12.1", default-features = false, features = [
     "webgl2",
 
     # extra
-    "jpeg",
+    # "jpeg", if/when we need this
     "subpixel_glyph_atlas",
     "wayland", # for linux
-    "zlib",
+    # "zlib", # not sure if this is better or worse than the default
 ] }
 bevy_embedded_assets = "0.9.1"
 # bevy_mod_picking = "0.17.0"
