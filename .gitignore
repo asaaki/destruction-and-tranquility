@@ -1,5 +1,6 @@
 .envrc
 /target
+/tmp
 /wasm/assets
 /wasm/dat_bg.*
 /wasm/dat.*
