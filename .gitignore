@@ -1,0 +1,5 @@
+.envrc
+/target
+/wasm/assets
+/wasm/dat_bg.*
+/wasm/dat.*

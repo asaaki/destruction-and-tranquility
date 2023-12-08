@@ -1,0 +1,38 @@
+[registries.crates-io]
+protocol = "sparse"
+
+[alias]
+fixit = "clippy --fix --allow-dirty --allow-staged --allow-no-vcs"
+
+u = "update"
+uu = "upgrade"
+
+c = "check"
+t = "test"
+
+b = "build"
+br = "build --release"
+r = "run"
+rr = "run --release"
+
+dyn-build = "build --features bevy/dynamic_linking"
+bd = "build --features bevy/dynamic_linking"
+brd = "build --release  --features bevy/dynamic_linking"
+
+dyn-run = "run --features bevy/dynamic_linking"
+rd = "run --features bevy/dynamic_linking"
+rrd = "run --release  --features bevy/dynamic_linking"
+
+wasm = "build --profile wasm-release --target wasm32-unknown-unknown"
+
+[env]
+ENV_TEST = { value = "D&T" }
+
+[target.'cfg(all())']
+rustflags = []
+### lints moved to Cargo.toml
+# --> https://github.com/EmbarkStudios/rust-ecosystem/issues/59
+# --> https://github.com/EmbarkStudios/rust-ecosystem/blob/main/lints.toml
+
+[target.wasm32-unknown-unknown]
+# rustflags = ['-Ctarget-feature=+atomics,+bulk-memory,+mutable-globals']
