@@ -1,3 +1,4 @@
+use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy::window::{WindowResized, WindowTheme};
 use bevy::{
@@ -56,9 +57,11 @@ pub fn run() {
             },
             default_plugins,
             SvgPlugin,
+            FrameTimeDiagnosticsPlugin,
             development::ExitonEscPlugin,
         ))
         .add_state::<AppState>()
+        .insert_resource(Time::<Fixed>::from_seconds(1. / 20.))
         .add_systems(
             Startup,
             (
@@ -66,11 +69,13 @@ pub fn run() {
                 setup_cursor,
                 setup_camera,
                 setup_test_assets,
+                setup_fps_display,
                 setup_debug_build_info,
             ),
         )
         .add_systems(Update, make_visible.run_if(in_state(AppState::Booting)))
         .add_systems(Update, (animate_ferris, absolute_positioning))
+        .add_systems(FixedUpdate, (update_fps_display,))
         .run();
 }
 
@@ -138,8 +143,40 @@ fn setup_test_assets(mut commands: Commands<'_, '_>, asset_server: Res<'_, Asset
         .insert(M);
 }
 
+fn default_font(asset_server: Res<'_, AssetServer>) -> Handle<Font> {
+    asset_server.load("fonts/FiraMonoNerdFontPropo-Regular.otf")
+}
+
+#[derive(Component)]
+struct FpsDisplay;
+
+fn setup_fps_display(mut commands: Commands<'_, '_>, asset_server: Res<'_, AssetServer>) {
+    let font = default_font(asset_server);
+    let style = TextStyle {
+        font: font.clone(),
+        font_size: 40.,
+        color: Color::rgba(0.5, 0.9, 1.0, 1.0),
+        ..default()
+    };
+    commands
+        .spawn(TextBundle {
+            text: Text::from_sections([
+                TextSection::new("FPS: ".to_string(), style.clone()),
+                TextSection::new("0".to_string(), style.clone()),
+            ]),
+            style: Style {
+                position_type: PositionType::Absolute,
+                bottom: Val::Px(12.0),
+                left: Val::Px(12.0),
+                ..default()
+            },
+            ..default()
+        })
+        .insert(FpsDisplay);
+}
+
 fn setup_debug_build_info(mut commands: Commands<'_, '_>, asset_server: Res<'_, AssetServer>) {
-    let font = asset_server.load("fonts/FiraMonoNerdFontPropo-Regular.otf");
+    let font = default_font(asset_server);
 
     commands.spawn(TextBundle {
         text: Text::from_sections([TextSection::new(
@@ -194,6 +231,17 @@ fn absolute_positioning(
                 -(0.5 * e.height) + M_Y_OFFSET,
                 0.0,
             );
+        }
+    }
+}
+
+fn update_fps_display(
+    diagnostics: Res<DiagnosticsStore>,
+    mut query: Query<&mut Text, With<FpsDisplay>>,
+) {
+    if let Some(mut text) = query.iter_mut().next() {
+        if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+            text.sections[1].value = format!("{:.0}", fps.average().unwrap_or_default());
         }
     }
 }
