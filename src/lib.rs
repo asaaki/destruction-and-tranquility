@@ -156,7 +156,6 @@ fn setup_fps_display(mut commands: Commands<'_, '_>, asset_server: Res<'_, Asset
         font: font.clone(),
         font_size: 40.,
         color: Color::rgba(0.5, 0.9, 1.0, 1.0),
-        ..default()
     };
     commands
         .spawn(TextBundle {
@@ -193,8 +192,7 @@ fn setup_debug_build_info(mut commands: Commands<'_, '_>, asset_server: Res<'_, 
             TextStyle {
                 font: font.clone(),
                 font_size: 12.0,
-                color: Color::GOLD,
-                ..default()
+                color: Color::GOLD
             },
         )])
         .with_alignment(TextAlignment::Right),
