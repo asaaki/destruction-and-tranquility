@@ -2,14 +2,12 @@ name: Release
 
 on:
   push:
-    tags:
-      - '*'
+    tags: ['*']
 
 env:
   binary: destruction_and_tranquility
   add_binaries_to_github_release: true
-  # uncomment when you want to upload to itch.io:
-  # itch_target: asaaki/destruction-and-tranquility
+  itch_target: asaaki/destruction-and-tranquility
 
 jobs:
 
@@ -25,12 +23,10 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - name: install wasm-bindgen-cli
-        run: |
-          cargo install wasm-bindgen-cli
+        run: cargo install wasm-bindgen-cli
 
       - name: Build
-        run: |
-          cargo build --release --target wasm32-unknown-unknown
+        run: cargo build --release --target wasm32-unknown-unknown
 
       - name: Prepare package
         run: |
@@ -39,8 +35,7 @@ jobs:
 
       - name: Package as a zip
         working-directory: ./wasm
-        run: |
-          zip --recurse-paths ../${{ env.binary }}.zip .
+        run: zip --recurse-paths ../${{ env.binary }}.zip .
 
       - name: Upload binaries to artifacts
         uses: actions/upload-artifact@v3
@@ -72,11 +67,11 @@ jobs:
           targets: x86_64-unknown-linux-gnu
       - name: install dependencies
         run: |
-          sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+          sudo apt-get update
+          sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
 
       - name: Build
-        run: |
-          cargo build --release --target x86_64-unknown-linux-gnu
+        run: cargo build --release --target x86_64-unknown-linux-gnu
 
       - name: Prepare package
         run: |
@@ -86,8 +81,7 @@ jobs:
 
       - name: Package as a zip
         working-directory: ./linux
-        run: |
-          zip --recurse-paths ../${{ env.binary }}.zip .
+        run: zip --recurse-paths ../${{ env.binary }}.zip .
 
       - name: Upload binaries to artifacts
         uses: actions/upload-artifact@v3
@@ -119,8 +113,7 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Build
-        run: |
-          cargo build --release --target x86_64-pc-windows-msvc
+        run: cargo build --release --target x86_64-pc-windows-msvc
 
       - name: Prepare package
         run: |
@@ -129,8 +122,7 @@ jobs:
           cp -r assets windows/
 
       - name: Package as a zip
-        run: |
-          Compress-Archive -Path windows/* -DestinationPath ${{ env.binary }}.zip
+        run: Compress-Archive -Path windows/* -DestinationPath ${{ env.binary }}.zip
 
       - name: Upload binaries to artifacts
         uses: actions/upload-artifact@v3
@@ -166,8 +158,7 @@ jobs:
           export MACOSX_DEPLOYMENT_TARGET="10.9"
 
       - name: Build
-        run: |
-          cargo build --release --target x86_64-apple-darwin
+        run: cargo build --release --target x86_64-apple-darwin
 
       - name: Prepare Package
         run: |
@@ -206,12 +197,10 @@ jobs:
           targets: aarch64-apple-darwin
       - name: Environment
         # macOS 11 was the first version to support ARM
-        run: |
-          export MACOSX_DEPLOYMENT_TARGET="11"
+        run: export MACOSX_DEPLOYMENT_TARGET="11"
 
       - name: Build
-        run: |
-          cargo build --release --target aarch64-apple-darwin
+        run: cargo build --release --target aarch64-apple-darwin
 
       - name: Prepare Package
         run: |
