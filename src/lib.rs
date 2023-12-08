@@ -1,11 +1,12 @@
 use bevy::prelude::*;
+use bevy::window::{WindowResized, WindowTheme};
 use bevy::{
-    asset::LoadedFolder,
     core::FrameCount,
     log::{Level, LogPlugin},
     window::{PresentMode, WindowResolution},
 };
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
+use bevy_svg::prelude::*;
 // use web_time::{Instant, SystemTime};
 
 shadow_rs::shadow!(build);
@@ -25,13 +26,13 @@ enum AppState {
 pub fn run() {
     let window = Window {
         title: TITLE.into(),
+        window_theme: Some(WindowTheme::Dark),
         resolution: WindowResolution::new(800., 600.),
         present_mode: PresentMode::AutoVsync,
         visible: false,
         // wasm
-        // fit_canvas_to_parent: true,
         prevent_default_event_handling: false,
-        // canvas: Some("#bevy-canvas".to_string()),
+        fit_canvas_to_parent: true,
         ..default()
     };
 
@@ -54,20 +55,22 @@ pub fn run() {
                 mode: PluginMode::ReplaceDefault,
             },
             default_plugins,
+            SvgPlugin,
             development::ExitonEscPlugin,
         ))
         .add_state::<AppState>()
         .add_systems(
             Startup,
             (
-                build_info,
                 setup_assets,
                 setup_cursor,
                 setup_camera,
                 setup_test_assets,
+                setup_debug_build_info,
             ),
         )
         .add_systems(Update, make_visible.run_if(in_state(AppState::Booting)))
+        .add_systems(Update, (animate_ferris, absolute_positioning))
         .run();
 }
 
@@ -86,16 +89,13 @@ fn make_visible(
     }
 }
 
-fn build_info() {
-    info!("built @ {}", build::BUILD_TIME);
-    info!("built with {}", build::RUST_VERSION);
-    // info!("committed @ {}", build::COMMIT_DATE);
-    // info!("commit: {}", build::SHORT_COMMIT);
-}
-
 fn setup_assets(asset_server: Res<'_, AssetServer>) {
     // let _fonts: Handle<LoadedFolder> = asset_server.load_folder("fonts");
-    let _textures: Handle<LoadedFolder> = asset_server.load_folder("textures");
+    // let _textures: Handle<LoadedFolder> = asset_server.load_folder("textures");
+    // let _svgs: Handle<LoadedFolder> = asset_server.load_folder("svgs");
+    let _font: Handle<Font> = asset_server.load("fonts/FiraMonoNerdFontPropo-Regular.otf");
+    let _ferris: Handle<Image> = asset_server.load("textures/ferris_and_friends/ferris-wave.png");
+    let _m: Handle<Svg> = asset_server.load("svgs/m.svg");
 }
 
 fn setup_cursor(mut windows: Query<'_, '_, &mut Window>) {
@@ -114,9 +114,86 @@ fn setup_camera(mut commands: Commands<'_, '_>) {
     // .add(InitWorldTracking).insert(MainCamera)
 }
 
+#[derive(Component)]
+struct Ferris;
+
+#[derive(Component)]
+struct M;
+
 fn setup_test_assets(mut commands: Commands<'_, '_>, asset_server: Res<'_, AssetServer>) {
-    commands.spawn(SpriteBundle {
-        texture: asset_server.load("textures/ferris_and_friends/ferris-wave.png"),
+    commands
+        .spawn(SpriteBundle {
+            texture: asset_server.load("textures/ferris_and_friends/ferris-wave.png"),
+            ..default()
+        })
+        .insert(Ferris);
+
+    commands
+        .spawn(Svg2dBundle {
+            svg: asset_server.load("svgs/m.svg"),
+            transform: Transform::from_scale(Vec3::splat(0.004))
+                .with_translation(Vec3::new(350.0, -255.0, 0.0)),
+            ..default()
+        })
+        .insert(M);
+}
+
+fn setup_debug_build_info(mut commands: Commands<'_, '_>, asset_server: Res<'_, AssetServer>) {
+    let font = asset_server.load("fonts/FiraMonoNerdFontPropo-Regular.otf");
+
+    commands.spawn(TextBundle {
+        text: Text::from_sections([TextSection::new(
+            format!(
+                "v{} ({}{}{}; {})\n{}\n{}",
+                build::PKG_VERSION,
+                build::SHORT_COMMIT,
+                if build::TAG.is_empty() { "" } else { ", " },
+                build::TAG,
+                build::BUILD_TIME,
+                build::RUST_VERSION,
+                build::RUST_CHANNEL,
+            ),
+            TextStyle {
+                font: font.clone(),
+                font_size: 12.0,
+                color: Color::GOLD,
+                ..default()
+            },
+        )])
+        .with_alignment(TextAlignment::Right),
+        style: Style {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(12.0),
+            right: Val::Px(60.0),
+            ..default()
+        },
         ..default()
     });
+}
+
+// UPDATEs
+
+fn animate_ferris(time: Res<'_, Time>, mut ferris: Query<'_, '_, &mut Transform, With<Ferris>>) {
+    if let Some(mut transform) = ferris.iter_mut().next() {
+        transform.rotation = Quat::from_rotation_z(0.25 * (time.elapsed_seconds() / 4.0).sin());
+        transform.scale = Vec3::splat(1.0 + 0.5 * (time.elapsed_seconds() / 2.0).sin());
+    }
+}
+
+fn absolute_positioning(
+    mut query: Query<'_, '_, &mut Transform, With<M>>,
+    mut resize_reader: EventReader<WindowResized>,
+) {
+    const M_X_OFFSET: f32 = 50.0;
+    const M_Y_OFFSET: f32 = 50.0;
+
+    for e in resize_reader.read() {
+        if let Some(mut transform) = query.iter_mut().next() {
+            transform.translation = Vec3::new(
+                (0.5 * e.width) - M_X_OFFSET,
+                -(0.5 * e.height) + M_Y_OFFSET,
+                0.0,
+            );
+        }
+    }
 }
