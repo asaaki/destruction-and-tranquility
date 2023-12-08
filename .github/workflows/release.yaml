@@ -26,10 +26,10 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.0
         with:
           cache-all-crates: true
-      - name: Install wasm-bindgen-cli
-        run: cargo install wasm-bindgen-cli
-      - name: Install binaryen (wasm-opt)
+      - name: Install tools
         run: |
+          curl -Lo wasm-bindgen.tar.gz https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.89/wasm-bindgen-0.2.89-x86_64-unknown-linux-musl.tar.gz
+          tar -xzf wasm-bindgen.tar.gz --wildcards '**/wasm-bindgen' --strip-components=1 -C .
           curl -Lo binaryen.tar.gz https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
           tar -xzf binaryen.tar.gz --wildcards '**/wasm-opt' --strip-components=2 -C .
 
@@ -38,9 +38,7 @@ jobs:
 
       - name: Prepare package
         run: |
-          wasm-bindgen --target web --no-typescript --out-name dat --out-dir wasm target/wasm32-unknown-unknown/wasm-release/destruction_and_tranquility.wasm
-        # skip - we embed assets into the wasm file
-        # cp -r assets wasm/
+          ./wasm-bindgen --target web --no-typescript --out-name dat --out-dir wasm target/wasm32-unknown-unknown/wasm-release/destruction_and_tranquility.wasm
 
       - name: Optimize wasm
         run: ./wasm-opt --metrics -Oz -o wasm/dat_bg.wasm wasm/dat_bg.wasm
