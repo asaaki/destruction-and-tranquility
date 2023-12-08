@@ -32,7 +32,40 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.12.1", features = ["wayland"] }
+bevy = { version = "0.12.1", default-features = false, features = [
+    # https://github.com/bevyengine/bevy/blob/v0.12.1/docs/cargo_features.md
+
+    # defaults
+    "animation",
+    "bevy_asset",
+    # "bevy_audio", # currently no audio present
+    "bevy_gilrs",
+    "bevy_scene",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "multi-threaded",
+    "png",
+    "hdr",
+    # "vorbis", # currently no audio present
+    "x11",
+    "bevy_gizmos",
+    # "android_shared_stdcxx", # no android builds
+    "tonemapping_luts",
+    # "default_font", # we provide our own fonts
+    "webgl2",
+
+    # extra
+    "jpeg",
+    "subpixel_glyph_atlas",
+    "wayland", # for linux
+    "zlib",
+] }
 bevy_embedded_assets = "0.9.1"
 # bevy_mod_picking = "0.17.0"
 # bevy_mouse_tracking_plugin = "0.7.0"
