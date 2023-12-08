@@ -25,11 +25,11 @@ enum AppState {
 pub fn run() {
     let window = Window {
         title: TITLE.into(),
-        resolution: WindowResolution::new(1920., 1080.),
+        resolution: WindowResolution::new(800., 600.),
         present_mode: PresentMode::AutoVsync,
         visible: false,
         // wasm
-        fit_canvas_to_parent: true,
+        // fit_canvas_to_parent: true,
         prevent_default_event_handling: false,
         // canvas: Some("#bevy-canvas".to_string()),
         ..default()
