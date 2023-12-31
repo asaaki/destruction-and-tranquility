@@ -34,5 +34,24 @@ rustflags = []
 # --> https://github.com/EmbarkStudios/rust-ecosystem/issues/59
 # --> https://github.com/EmbarkStudios/rust-ecosystem/blob/main/lints.toml
 
-[target.wasm32-unknown-unknown]
+# [target.wasm32-unknown-unknown]
 # rustflags = ['-Ctarget-feature=+atomics,+bulk-memory,+mutable-globals']
+
+[target.x86_64-pc-windows-msvc]
+# linker = "rust-lld.exe" # Rust's LLVM linker
+# linker = "lld-link.exe" # MS' LLVM linker
+linker = "link.exe" # MSVC linker
+rustflags = [
+    "-Ctarget-feature=+crt-static",
+    "-Clink-args=/DEFAULTLIB:ucrt.lib /DEFAULTLIB:libvcruntime.lib libcmt.lib",
+    "-Clink-args=/NODEFAULTLIB:libvcruntimed.lib /NODEFAULTLIB:vcruntime.lib /NODEFAULTLIB:vcruntimed.lib",
+    "-Clink-args=/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib",
+    "-Clink-args=/NODEFAULTLIB:libucrt.lib /NODEFAULTLIB:libucrtd.lib /NODEFAULTLIB:ucrtd.lib",
+    # "-Zshare-generics=y",
+]
+
+[target.x86_64-pc-windows-gnu]
+rustflags = [
+    "-Ctarget-feature=+crt-static",
+    # "-Zshare-generics=y",
+]
