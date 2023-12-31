@@ -69,13 +69,13 @@ bevy = { version = "0.12.1", default-features = false, features = [
 bevy_embedded_assets = "0.9.1"
 # bevy_mod_picking = "0.17.0"
 # bevy_mouse_tracking_plugin = "0.7.0"
-bevy_prng = { version = "0.2", features = [
+bevy_prng = { version = "0.2.0", features = [
     "rand_chacha",
     "rand_pcg",
     "rand_xoshiro",
     "wyrand",
 ] }
-bevy_rand = "0.4"
+bevy_rand = "0.4.0"
 bevy_svg = "0.12.0"
 itertools = "0.12.0"
 leafwing-input-manager = "0.11.2"
