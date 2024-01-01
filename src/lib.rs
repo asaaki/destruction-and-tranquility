@@ -14,8 +14,8 @@ shadow_rs::shadow!(build);
 mod development;
 
 const TITLE: &str = "[DaT] Destruction and Tranquility";
-// const CLEAR_COLOR_BOOT: ClearColor = ClearColor(Color::BLACK);
-const CLEAR_COLOR_BOOT: ClearColor = ClearColor(Color::rgb(0.0, 0.1, 0.2));
+const CCC: f32 = 34.0/255.0;
+const CLEAR_COLOR_BOOT: ClearColor = ClearColor(Color::rgba(CCC, CCC, CCC, 1.0));
 
 #[derive(States, Debug, Default, Hash, PartialEq, Eq, Clone)]
 enum AppState {
