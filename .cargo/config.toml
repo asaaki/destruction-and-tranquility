@@ -43,10 +43,7 @@ rustflags = []
 linker = "link.exe" # MSVC linker
 rustflags = [
     "-Ctarget-feature=+crt-static",
-    "-Clink-args=/DEFAULTLIB:ucrt.lib /DEFAULTLIB:libvcruntime.lib libcmt.lib",
-    "-Clink-args=/NODEFAULTLIB:libvcruntimed.lib /NODEFAULTLIB:vcruntime.lib /NODEFAULTLIB:vcruntimed.lib",
-    "-Clink-args=/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib",
-    "-Clink-args=/NODEFAULTLIB:libucrt.lib /NODEFAULTLIB:libucrtd.lib /NODEFAULTLIB:ucrtd.lib",
+    # << block here replaced with static_vcruntime usage in build.rs >>
     # "-Zshare-generics=y",
 ]
 
