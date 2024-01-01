@@ -81,11 +81,11 @@ itertools = "0.12.0"
 leafwing-input-manager = "0.11.2"
 lol_alloc = "0.4.0"
 rand = "0.8.5"
-shadow-rs = { version = "0.25.0", default-features = false }
-web-time = "0.2.3"
+shadow-rs = { version = "0.26.0", default-features = false }
+web-time = "0.2.4"
 
 [build-dependencies]
-shadow-rs = "0.25.0"
+shadow-rs = "0.26.0"
 
 [lints.clippy]
 all = "warn"
