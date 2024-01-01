@@ -137,6 +137,7 @@ jobs:
         run: |
           mkdir windows
           cp target/x86_64-pc-windows-msvc/release/${{ env.binary }}.exe windows/
+          cp -r utilities/windows/ windows/
           cp -r assets windows/
 
       - name: Package as a zip
