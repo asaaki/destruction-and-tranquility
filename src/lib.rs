@@ -14,7 +14,7 @@ shadow_rs::shadow!(build);
 mod development;
 
 const TITLE: &str = "[DaT] Destruction and Tranquility";
-const CCC: f32 = 34.0/255.0;
+const CCC: f32 = 34.0 / 255.0;
 const CLEAR_COLOR_BOOT: ClearColor = ClearColor(Color::rgba(CCC, CCC, CCC, 1.0));
 
 #[derive(States, Debug, Default, Hash, PartialEq, Eq, Clone)]
