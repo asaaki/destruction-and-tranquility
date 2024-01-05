@@ -25,7 +25,14 @@ jobs:
         with:
           cache-all-crates: true
       - name: Install Dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - name: Assets
+        run: |
+          cargo install bva_cli
+          bva generate
+          bva archive
       - name: Run cargo test
         run: cargo test
 
@@ -46,7 +53,14 @@ jobs:
         with:
           cache-all-crates: true
       - name: Install Dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - name: Assets
+        run: |
+          cargo install bva_cli
+          bva generate
+          bva archive
       - name: Run clippy
         run: cargo clippy -- -D warnings
 
