@@ -1,4 +1,6 @@
 .envrc
+/assets.bva
+/secrets
 /target
 /tmp
 /wasm/assets

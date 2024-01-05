@@ -8,6 +8,11 @@ use lol_alloc::{FreeListAllocator, LockedAllocator};
 static ALLOCATOR: LockedAllocator<FreeListAllocator> =
     LockedAllocator::new(FreeListAllocator::new());
 
-fn main() {
-    destruction_and_tranquility_game::run();
+fn main() -> anyhow::Result<()> {
+    #[cfg(target_arch = "wasm32")]
+    std::panic::set_hook(Box::new(console_error_panic_hook::hook));
+
+    destruction_and_tranquility_game::run()?;
+
+    Ok(())
 }

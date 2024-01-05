@@ -32,6 +32,12 @@ jobs:
           tar -xzf wasm-bindgen.tar.gz --wildcards '**/wasm-bindgen' --strip-components=1 -C .
           curl -Lo binaryen.tar.gz https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
           tar -xzf binaryen.tar.gz --wildcards '**/wasm-opt' --strip-components=2 -C .
+          cargo install bva_cli
+
+      - name: Create assets archive
+        run: |
+          bva generate
+          bva archive
 
       - name: Build
         run: cargo build --profile wasm-release --target wasm32-unknown-unknown
@@ -39,6 +45,7 @@ jobs:
       - name: Prepare package
         run: |
           ./wasm-bindgen --target web --no-typescript --out-name dat --out-dir wasm target/wasm32-unknown-unknown/wasm-release/destruction_and_tranquility.wasm
+        # only once we can fetch it: cp -r assets.archive wasm/
 
       - name: Optimize wasm
         run: ./wasm-opt --metrics -Oz -o wasm/dat_bg.wasm wasm/dat_bg.wasm
@@ -83,6 +90,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+          cargo install bva_cli
+
+      - name: Create assets archive
+        run: |
+          bva generate
+          bva archive
 
       - name: Build
         run: cargo build --release --target x86_64-unknown-linux-gnu
@@ -91,7 +104,7 @@ jobs:
         run: |
           mkdir linux
           cp target/x86_64-unknown-linux-gnu/release/${{ env.binary }} linux/
-          cp -r assets linux/
+          cp -r assets.bva linux/
 
       - name: Package as a zip
         working-directory: ./linux
@@ -130,6 +143,15 @@ jobs:
         with:
           cache-all-crates: true
 
+      - name: Install dependencies
+        run: |
+          cargo install bva_cli
+
+      - name: Create assets archive
+        run: |
+          bva generate
+          bva archive
+
       - name: Build
         run: cargo build --release --target x86_64-pc-windows-msvc
 
@@ -138,7 +160,7 @@ jobs:
           mkdir windows
           cp target/x86_64-pc-windows-msvc/release/${{ env.binary }}.exe windows/
           cp -r utilities/windows/ windows/
-          cp -r assets windows/
+          cp -r assets.bva windows/
 
       - name: Package as a zip
         run: Compress-Archive -Path windows/* -DestinationPath ${{ env.binary }}.zip
@@ -180,6 +202,15 @@ jobs:
           export CFLAGS="-fno-stack-check"
           export MACOSX_DEPLOYMENT_TARGET="10.9"
 
+      - name: Install dependencies
+        run: |
+          cargo install bva_cli
+
+      - name: Create assets archive
+        run: |
+          bva generate
+          bva archive
+
       - name: Build
         run: cargo build --release --target x86_64-apple-darwin
 
@@ -187,7 +218,7 @@ jobs:
         run: |
           mkdir -p ${{ env.binary }}.app/Contents/MacOS
           cp target/x86_64-apple-darwin/release/${{ env.binary }} ${{ env.binary }}.app/Contents/MacOS/
-          cp -r assets ${{ env.binary }}.app/Contents/MacOS/
+          cp -r assets.bva ${{ env.binary }}.app/Contents/MacOS/
           hdiutil create -fs HFS+ -volname "${{ env.binary }}" -srcfolder ${{ env.binary }}.app ${{ env.binary }}-macOS-intel.dmg
 
       - name: Upload binaries to artifacts
@@ -222,6 +253,15 @@ jobs:
         # macOS 11 was the first version to support ARM
         run: export MACOSX_DEPLOYMENT_TARGET="11"
 
+      - name: Install dependencies
+        run: |
+          cargo install bva_cli
+
+      - name: Create assets archive
+        run: |
+          bva generate
+          bva archive
+
       - name: Build
         run: cargo build --release --target aarch64-apple-darwin
 
@@ -229,7 +269,7 @@ jobs:
         run: |
           mkdir -p ${{ env.binary }}.app/Contents/MacOS
           cp target/aarch64-apple-darwin/release/${{ env.binary }} ${{ env.binary }}.app/Contents/MacOS/
-          cp -r assets ${{ env.binary }}.app/Contents/MacOS/
+          cp -r assets.bva ${{ env.binary }}.app/Contents/MacOS/
           hdiutil create -fs HFS+ -volname "${{ env.binary }}-macOS-apple-silicon" -srcfolder ${{ env.binary }}.app ${{ env.binary }}-macOS-apple-silicon.dmg
 
       - name: Upload binaries to artifacts

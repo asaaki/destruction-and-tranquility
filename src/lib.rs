@@ -6,11 +6,11 @@ use bevy::{
     log::{Level, LogPlugin},
     window::{PresentMode, WindowResolution},
 };
-use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 use bevy_svg::prelude::*;
 // use web_time::{Instant, SystemTime};
 
 shadow_rs::shadow!(build);
+
 mod development;
 
 const TITLE: &str = "[DaT] Destruction and Tranquility";
@@ -24,7 +24,7 @@ enum AppState {
     Running,
 }
 
-pub fn run() {
+pub fn run() -> anyhow::Result<()> {
     let window = Window {
         title: TITLE.into(),
         window_theme: Some(WindowTheme::Dark),
@@ -51,9 +51,14 @@ pub fn run() {
     App::new()
         .insert_resource(Msaa::Sample4)
         .insert_resource(CLEAR_COLOR_BOOT)
+        // .insert_resource(bevy::asset::AssetMetaCheck::Never)
         .add_plugins((
-            EmbeddedAssetPlugin {
-                mode: PluginMode::ReplaceDefault,
+            bevy_vach_assets::BevyVachAssetsPlugin {
+                public_key_bytes: Some(include_bytes!("../secrets/key.pub")),
+                #[cfg(not(target_arch = "wasm32"))]
+                static_archive: None,
+                #[cfg(target_arch = "wasm32")]
+                static_archive: Some(include_bytes!("../assets.bva")),
             },
             default_plugins,
             SvgPlugin,
@@ -77,6 +82,8 @@ pub fn run() {
         .add_systems(Update, (animate_ferris, absolute_positioning))
         .add_systems(FixedUpdate, (update_fps_display,))
         .run();
+
+    Ok(())
 }
 
 fn make_visible(
